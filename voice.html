@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Victor AI Agent Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+        body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .service-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .service-card:hover {
+      transform: translateY(-8px);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.8); }
+    }
+
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .status-indicator {
+      position: relative;
+    }
+
+    .status-indicator::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      background: #10b981;
+      border-radius: 50%;
+      border: 2px solid white;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .service-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .service-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .service-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .tab-active {
+      @apply bg-white text-blue-600 shadow-md;
+    }
+    .fade-in {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-[#665df5] to-[#7f6aff] min-h-screen font-sans text-white">
+  <div class="fade-in">
+    <!-- Fixed Header Bar -->
+      <!-- Header -->
+  <nav class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm status-indicator">
+            <i class="fas fa-brain text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-white">AI Hub</h1>
+            <p class="text-sm text-gray-200">Intelligent Business Solutions</p>
+          </div>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-6">
+          <div class="text-right">
+            <p class="text-sm text-gray-200">System Status</p>
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span class="text-sm font-medium text-white">All Systems Online</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+ 
+
+    <div class="max-w-6xl mx-auto py-10 px-4">
+      <!-- Welcome Section -->
+      <!-- <section class="text-center mb-10">
+        <div class="flex justify-center mb-4">
+          <div class="bg-white/20 p-4 rounded-full">
+            <i class="fas fa-rocket text-3xl"></i>
+          </div>
+        </div>
+        <h2 class="text-4xl font-bold text-white mb-2">Welcome to <span class="text-blue-200">AI Services</span></h2>
+        <p class="text-white/80 max-w-2xl mx-auto">Supercharge your business with our suite of AI-powered tools. From trade intelligence to email management, we’ve got everything you need to work smarter, not harder.</p>
+
+        <div class="flex flex-wrap justify-center gap-4 mt-8">
+          <div class="bg-white/20 backdrop-blur-md px-6 py-4 rounded-xl text-white">
+            <div class="text-2xl font-bold">4</div>
+            <div class="text-sm opacity-80">AI Agents</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-md px-6 py-4 rounded-xl text-white">
+            <div class="text-2xl font-bold">99.9%</div>
+            <div class="text-sm opacity-80">Uptime</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-md px-6 py-4 rounded-xl text-white">
+            <div class="text-2xl font-bold">24/7</div>
+            <div class="text-sm opacity-80">Available</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-md px-6 py-4 rounded-xl text-white">
+            <div class="text-2xl font-bold">150+</div>
+            <div class="text-sm opacity-80">Countries</div>
+          </div>
+        </div>
+      </section> -->
+
+      <!-- Tabs -->
+      <div class="flex justify-center mb-6">
+        <div class="bg-white/10 backdrop-blur-md rounded-full p-1 flex space-x-2 shadow-inner">
+          <button 
+            onclick="loadAgent('video'); setActiveTab(this)" 
+            class="tab py-2 px-6 rounded-full font-semibold text-white hover:bg-white/20 transition-all duration-300">
+            <i class="fas fa-video mr-2"></i> Video Agent
+          </button>
+          <button 
+            onclick="loadAgent('voice'); setActiveTab(this)" 
+            class="tab py-2 px-6 rounded-full font-semibold text-white hover:bg-white/20 transition-all duration-300">
+            <i class="fas fa-microphone-alt mr-2"></i> Voice Agent
+          </button>
+        </div>
+      </div>
+
+      <!-- Frame Area -->
+      <div class="rounded-2xl overflow-hidden shadow-2xl bg-white w-full h-[75vh] transition-all duration-700">
+        <iframe id="agentFrame" src="" class="w-full h-full border-none"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loadAgent(type) {
+      const iframe = document.getElementById('agentFrame');
+      if (type === 'video') {
+        iframe.src = 'https://meet.eself.ai/115608019649541866580/talk-to-agent?aiclid=biAvCpDe&flow_id=agent-2';
+      } else if (type === 'voice') {
+        iframe.src = 'https://agent.jotform.com/01972fa3f54477cebe130499ea6f1e8fb6bc/voice';
+      }
+    }
+
+    function setActiveTab(el) {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('tab-active');
+      });
+      el.classList.add('tab-active');
+    }
+
+    window.onload = () => {
+      const defaultTab = document.querySelectorAll('.tab')[0];
+      defaultTab.click();
+    };
+  </script>
+</body>
+</html>
