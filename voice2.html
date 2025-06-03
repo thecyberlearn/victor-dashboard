@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Victor AI Agent Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+        body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .service-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .service-card:hover {
+      transform: translateY(-8px);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.8); }
+    }
+
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .status-indicator {
+      position: relative;
+    }
+
+    .status-indicator::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      background: #10b981;
+      border-radius: 50%;
+      border: 2px solid white;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .service-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .service-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .service-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .tab-active {
+      @apply bg-white text-blue-600 shadow-md;
+    }
+    .fade-in {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .permission-indicator {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 1000;
+      display: none;
+    }
+
+    .permission-indicator.show {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-[#665df5] to-[#7f6aff] min-h-screen font-sans text-white">
+  <div class="fade-in">
+    <!-- Permission Status Indicator -->
+    <div id="permissionStatus" class="permission-indicator">
+      <i class="fas fa-info-circle mr-2"></i>
+      <span id="permissionText">Checking permissions...</span>
+    </div>
+
+    <!-- Fixed Header Bar -->
+    <!-- Header -->
+    <nav class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm status-indicator">
+              <i class="fas fa-brain text-white text-xl"></i>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-white">AI Hub</h1>
+              <p class="text-sm text-gray-200">Intelligent Business Solutions</p>
+            </div>
+          </div>
+          
+          <div class="hidden md:flex items-center gap-6">
+            <div class="text-right">
+              <p class="text-sm text-gray-200">System Status</p>
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span class="text-sm font-medium text-white">All Systems Online</span>
+              </div>
+            </div>
+            <button onclick="requestPermissions()" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2">
+              <i class="fas fa-shield-alt"></i>
+              <span class="text-sm">Enable Permissions</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+ 
+    <div class="max-w-6xl mx-auto py-10 px-4">
+      <!-- Tabs -->
+      <div class="flex justify-center mb-6">
+        <div class="bg-white/10 backdrop-blur-md rounded-full p-1 flex space-x-2 shadow-inner">
+          <button 
+            onclick="loadAgent('video'); setActiveTab(this)" 
+            class="tab py-2 px-6 rounded-full font-semibold text-white hover:bg-white/20 transition-all duration-300">
+            <i class="fas fa-video mr-2"></i> Video Agent
+          </button>
+          <button 
+            onclick="loadAgent('voice'); setActiveTab(this)" 
+            class="tab py-2 px-6 rounded-full font-semibold text-white hover:bg-white/20 transition-all duration-300">
+            <i class="fas fa-microphone-alt mr-2"></i> Voice Agent
+          </button>
+        </div>
+      </div>
+
+      <!-- Frame Area -->
+      <div class="rounded-2xl overflow-hidden shadow-2xl bg-white w-full h-[75vh] transition-all duration-700">
+        <iframe id="agentFrame" src="" class="w-full h-full border-none"
+                allow="camera *; microphone *; autoplay *; encrypted-media *; fullscreen *; display-capture *; geolocation *; midi *; sync-xhr *; microphone https://meet.eself.ai https://agent.jotform.com; camera https://meet.eself.ai https://agent.jotform.com"
+                allowfullscreen
+                webkitallowfullscreen
+                mozallowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check and request permissions
+    async function checkPermissions() {
+      try {
+        // Check if permissions API is supported
+        if ('permissions' in navigator) {
+          const cameraPermission = await navigator.permissions.query({ name: 'camera' });
+          const microphonePermission = await navigator.permissions.query({ name: 'microphone' });
+          
+          console.log('Camera permission:', cameraPermission.state);
+          console.log('Microphone permission:', microphonePermission.state);
+          
+          updatePermissionStatus(cameraPermission.state, microphonePermission.state);
+        }
+      } catch (error) {
+        console.log('Permission check failed:', error);
+        showPermissionIndicator('Permission check unavailable');
+      }
+    }
+
+    // Request permissions explicitly
+    async function requestPermissions() {
+      try {
+        showPermissionIndicator('Requesting permissions...');
+        
+        // Request camera and microphone access
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: true, 
+          audio: true 
+        });
+        
+        // Stop the stream immediately (we just needed permission)
+        stream.getTracks().forEach(track => track.stop());
+        
+        showPermissionIndicator('✅ Permissions granted!');
+        setTimeout(() => hidePermissionIndicator(), 3000);
+        
+        console.log('Permissions granted successfully');
+      } catch (error) {
+        console.error('Permission request failed:', error);
+        showPermissionIndicator('❌ Permission denied. Please allow camera/microphone access.');
+        setTimeout(() => hidePermissionIndicator(), 5000);
+      }
+    }
+
+    function updatePermissionStatus(cameraState, microphoneState) {
+      if (cameraState === 'granted' && microphoneState === 'granted') {
+        showPermissionIndicator('✅ All permissions granted');
+        setTimeout(() => hidePermissionIndicator(), 2000);
+      } else if (cameraState === 'denied' || microphoneState === 'denied') {
+        showPermissionIndicator('❌ Some permissions denied');
+      } else {
+        showPermissionIndicator('⚠️ Permissions not yet granted');
+      }
+    }
+
+    function showPermissionIndicator(message) {
+      const indicator = document.getElementById('permissionStatus');
+      const text = document.getElementById('permissionText');
+      text.textContent = message;
+      indicator.classList.add('show');
+    }
+
+    function hidePermissionIndicator() {
+      const indicator = document.getElementById('permissionStatus');
+      indicator.classList.remove('show');
+    }
+
+    function loadAgent(type) {
+      const iframe = document.getElementById('agentFrame');
+      if (type === 'video') {
+        iframe.src = 'https://meet.eself.ai/115608019649541866580/talk-to-agent?aiclid=biAvCpDe&flow_id=agent-2';
+      } else if (type === 'voice') {
+        iframe.src = 'https://agent.jotform.com/01972fa3f54477cebe130499ea6f1e8fb6bc/voice';
+      }
+      
+      // Request permissions when loading an agent
+      setTimeout(() => {
+        checkPermissions();
+      }, 1000);
+    }
+
+    function setActiveTab(el) {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('tab-active');
+      });
+      el.classList.add('tab-active');
+    }
+
+    // Initialize the page
+    window.onload = () => {
+      const defaultTab = document.querySelectorAll('.tab')[0];
+      defaultTab.click();
+      
+      // Check permissions on load
+      checkPermissions();
+    };
+
+    // Handle iframe load events
+    document.getElementById('agentFrame').addEventListener('load', function() {
+      console.log('Agent iframe loaded');
+      checkPermissions();
+    });
+  </script>
+</body>
+</html>
